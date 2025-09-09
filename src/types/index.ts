@@ -4,6 +4,7 @@ export interface ChatMessage {
   content: string;
   citations?: Citation[];
   timestamp: Date;
+  isGuardrailResponse?: boolean;
 }
 
 export interface Citation {
@@ -46,4 +47,23 @@ export interface SearchContext {
     end: Date;
   };
   sources?: string[];
+}
+
+export interface ExampleChip {
+  id: string;
+  label: string;
+  query: string;
+}
+
+export interface FollowUpChip {
+  id: string;
+  label: string;
+  query: string;
+}
+
+export interface ResourceCard {
+  title: string;
+  description: string;
+  url: string;
+  icon?: string;
 }

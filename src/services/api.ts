@@ -1,3 +1,5 @@
+import { ChatMessage } from '../types';
+
 const API_BASE = '/api';
 
 export class ApiService {
@@ -5,7 +7,12 @@ export class ApiService {
     const response = await fetch(`${API_BASE}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, history })
+      body: JSON.stringify({ 
+        message, 
+        history,
+        // Request sentence-level precision for citations
+        citationPrecision: 'sentence'
+      })
     });
     
     if (!response.ok) {

@@ -5,7 +5,7 @@ import { useSystemStatus } from './hooks/useSystemStatus';
 import { ApiService } from './services/api';
 
 function App() {
-  const { messages, isLoading, sendMessage, clearChat } = useChat();
+  const { messages, isLoading, sendMessage, clearChat, followUpSuggestions } = useChat();
   const systemStatus = useSystemStatus();
 
   const handleExportKG = async () => {
@@ -36,6 +36,7 @@ function App() {
       onClearChat={clearChat}
       onExportKG={handleExportKG}
       systemStatus={systemStatus}
+      followUpSuggestions={followUpSuggestions}
     />
   );
 }

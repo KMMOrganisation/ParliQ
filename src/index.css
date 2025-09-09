@@ -71,6 +71,7 @@
 /* Custom scrollbar for dark theme */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -84,6 +85,20 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
+}
+
+/* Thin scrollbar utilities */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #475569 #1e293b;
+}
+
+.scrollbar-track-slate-800 {
+  --scrollbar-track: #1e293b;
+}
+
+.scrollbar-thumb-slate-600 {
+  --scrollbar-thumb: #475569;
 }
 
 /* Loading animation */
@@ -162,6 +177,26 @@ textarea:focus {
   
   .citation-card {
     padding: 0.75rem;
+  }
+  
+  /* Horizontal scroll for chips */
+  .chip-container {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Safe area for mobile devices */
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Ensure minimum tap target size */
+  button, 
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 44px;
+    min-width: 44px;
   }
 }
 

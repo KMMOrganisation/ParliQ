@@ -1,7 +1,11 @@
 import React from 'react';
 import { Send, Bot, User, ExternalLink, Copy, RotateCcw, Download, Database } from 'lucide-react';
-import { ChatMessage, Citation } from '../../types';
+import { ChatMessage, Citation, FollowUpChip } from '../../types';
 import { format } from 'date-fns';
+import { ExampleChips } from './ExampleChips';
+import { FollowUpChips } from './FollowUpChips';
+import { DisclaimerBanner } from './DisclaimerBanner';
+import { ResourceCards } from './ResourceCards';
 
 interface ChatInterfaceProps {
   messages: ChatMessage[];
@@ -10,6 +14,7 @@ interface ChatInterfaceProps {
   onClearChat: () => void;
   onExportKG: () => void;
   systemStatus: { videosIngested: number; entitiesExtracted: number };
+  followUpSuggestions: FollowUpChip[];
 }
 
 export function ChatInterface({ 
@@ -18,7 +23,8 @@ export function ChatInterface({
   onSendMessage, 
   onClearChat, 
   onExportKG,
-  systemStatus 
+  systemStatus,
+  followUpSuggestions
 }: ChatInterfaceProps) {
   const [input, setInput] = React.useState('');
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
@@ -50,16 +56,7 @@ export function ChatInterface({
     navigator.clipboard.writeText(text);
   };
 
-  const suggestedQuestions = [
-    "What has been said about the NHS recently?",
-    "Which MPs have spoken about climate change?",
-    "What are the different party positions on Brexit?",
-    "Show me quotes about housing policy",
-    "Who has mentioned economic policy in the last month?",
-    "What did Boris Johnson say about immigration?",
-    "Find discussions about education funding",
-    "What are Labour's positions on taxation?"
-  ];
+  // Remove the old suggested questions array as we now use ExampleChips
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
@@ -71,13 +68,16 @@ export function ChatInterface({
         Skip to chat input
       </a>
 
+      {/* Disclaimer Banner */}
+      <DisclaimerBanner />
+
       {/* Header */}
       <header className="bg-slate-900 border-b border-slate-700 px-4 py-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-100">UK Politics Knowledge Graph</h1>
+            <h1 className="text-2xl font-bold text-slate-100">ParliQ</h1>
             <p className="text-slate-400 text-sm mt-1">
-              Ask questions about UK political discourse • {systemStatus.videosIngested} videos • {systemStatus.entitiesExtracted} entities
+              Understand Parliament, one question at a time • {systemStatus.videosIngested} videos • {systemStatus.entitiesExtracted} entities
             </p>
           </div>
           
@@ -112,24 +112,17 @@ export function ChatInterface({
               <div className="bg-slate-900 rounded-2xl p-8 border border-slate-700">
                 <Bot className="w-16 h-16 text-blue-500 mx-auto mb-6" />
                 <h2 className="text-2xl font-semibold text-slate-100 mb-4">
-                  Ask me anything about UK politics
+                  Hi! I'm ParliQ, your AI guide to what's happening in UK Parliament.
                 </h2>
                 <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
-                  I can help you explore political discourse, find quotes, discover entity relationships, 
-                  and answer questions using our knowledge graph of UK political transcripts.
+                  I'll summarise debates and link you straight to the moments in video. Ask me anything.
                 </p>
                 
-                <div className="grid md:grid-cols-2 gap-3 max-w-3xl mx-auto">
-                  {suggestedQuestions.map((question, index) => (
-                    <button
-                      key={index}
-                      onClick={() => onSendMessage(question)}
-                      className="text-left p-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-300 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-slate-500"
-                      disabled={isLoading}
-                    >
-                      {question}
-                    </button>
-                  ))}
+                <div className="max-w-3xl mx-auto">
+                  <ExampleChips 
+                    onChipClick={onSendMessage}
+                    disabled={isLoading}
+                  />
                 </div>
               </div>
             </div>
@@ -154,6 +147,10 @@ export function ChatInterface({
                       <div className="prose prose-invert max-w-none">
                         <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
                       </div>
+                      
+                      {message.isGuardrailResponse && (
+                        <ResourceCards />
+                      )}
                       
                       {message.citations && message.citations.length > 0 && (
                         <div className="mt-6 pt-6 border-t border-slate-700">
@@ -200,6 +197,18 @@ export function ChatInterface({
                           </div>
                         </div>
                       )}
+
+                      {/* Show follow-up suggestions only for the last assistant message */}
+                      {message.role === 'assistant' && 
+                       !message.isGuardrailResponse && 
+                       messages[messages.length - 1]?.id === message.id && 
+                       followUpSuggestions.length > 0 && (
+                        <FollowUpChips 
+                          suggestions={followUpSuggestions}
+                          onChipClick={onSendMessage}
+                          disabled={isLoading}
+                        />
+                      )}
                     </div>
                     
                     {message.role === 'user' && (
@@ -238,19 +247,19 @@ export function ChatInterface({
         </div>
       </div>
 
-      {/* Input Area */}
-      <div className="bg-slate-900 border-t border-slate-700 px-4 py-4">
+      {/* Input Area - Sticky on mobile */}
+      <div className="sticky bottom-0 bg-slate-900 border-t border-slate-700 px-4 py-4 safe-area-inset-bottom">
         <div className="max-w-4xl mx-auto">
-          <form onSubmit={handleSubmit} className="flex space-x-4">
+          <form onSubmit={handleSubmit} className="flex space-x-3 sm:space-x-4">
             <div className="flex-1">
-              <label htmlFor="chat-input" className="sr-only">Enter your question about UK politics</label>
+              <label htmlFor="chat-input" className="sr-only">Enter your question about Parliament</label>
               <input
                 id="chat-input"
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about UK politics, policies, politicians, or specific quotes..."
-                className="w-full px-6 py-4 bg-slate-800 border border-slate-600 rounded-xl text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                placeholder="Ask about Parliament, policies, MPs, or specific debates..."
+                className="w-full px-4 py-3 sm:px-6 sm:py-4 bg-slate-800 border border-slate-600 rounded-xl text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base sm:text-lg min-h-[44px]"
                 disabled={isLoading}
                 autoComplete="off"
               />
@@ -258,7 +267,7 @@ export function ChatInterface({
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="px-6 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center space-x-2 text-lg font-medium"
+              className="px-4 py-3 sm:px-6 sm:py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center space-x-2 text-base sm:text-lg font-medium min-h-[44px] min-w-[44px]"
               aria-label="Send message"
             >
               <Send className="w-5 h-5" />
@@ -267,7 +276,7 @@ export function ChatInterface({
           </form>
           
           <p className="text-xs text-slate-500 mt-3 text-center">
-            Ask questions about UK political discourse. I'll search the knowledge graph and provide citations.
+            I'll explain parliamentary discussions with precise video citations.
           </p>
         </div>
       </div>

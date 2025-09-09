@@ -1,14 +1,20 @@
-# UK Politics Knowledge Graph - Chat Interface
+# ParliQ — "Understand Parliament, one question at a time."
 
-A conversational interface for exploring UK political discourse through an AI-powered knowledge graph. Ask questions about politicians, policies, parties, and political events, and get answers grounded in real transcript data with source citations.
+A conversational interface for exploring UK parliamentary discourse through an AI-powered knowledge graph. Ask questions about politicians, policies, parties, and political events, and get answers grounded in real transcript data with source citations.
 
 ## Features
 
-- **Conversational Q&A**: Natural language interface powered by AI
-- **Source Citations**: Every answer includes citations with YouTube timestamps
+- **Conversational Q&A**: Natural language interface powered by AI with warm, teacher-like tone
+- **Intro Greeting**: Welcoming message explaining ParliQ's capabilities when chat is empty
+- **Example Prompt Chips**: One-click access to common topics (Education, NHS/Healthcare, Homelessness, World Politics)
+- **Follow-up Suggestions**: Contextual chips after each response for deeper exploration
+- **Source Citations**: Every answer includes precise sentence-level citations with YouTube timestamps
 - **Knowledge Graph Export**: Download the complete knowledge graph as Turtle (.ttl)
-- **Accessible Design**: WCAG 2.2 AA compliant with dark mode
+- **Accessible Design**: WCAG 2.2 AA compliant with dark mode and mobile optimization
+- **Disclaimer Banner**: Persistent notice about the tool's scope and limitations
+- **Guardrails**: Polite refusal of legal/voting advice with resource cards to official sources
 - **Real-time Status**: Live updates on ingested videos and extracted entities
+- **Mobile Optimized**: Sticky input, horizontal scrolling chips, and 44px+ tap targets
 
 ## Architecture
 
@@ -79,18 +85,29 @@ VITE_DEBUG=true
 
 ## Usage
 
-1. **Ask Questions**: Type natural language questions about UK politics
-2. **View Citations**: Click citation links to jump to specific YouTube timestamps  
-3. **Export Data**: Download the knowledge graph as Turtle format
-4. **Clear History**: Reset the conversation at any time
+1. **Start with Examples**: Click example chips for common topics or type your own question
+2. **Ask Questions**: Type natural language questions about UK Parliament and politics
+3. **Explore Further**: Use follow-up suggestion chips to dive deeper into topics
+4. **View Citations**: Click citation links to jump to specific YouTube timestamps with sentence-level precision
+5. **Export Data**: Download the knowledge graph as Turtle format
+6. **Clear History**: Reset the conversation at any time
+
+### User Interface Features
+
+- **Intro Greeting**: When starting fresh, ParliQ introduces itself and explains its capabilities
+- **Example Chips**: Quick-start buttons for Education, NHS/Healthcare, Homelessness, and World Politics
+- **Follow-up Suggestions**: After each response, get 3-5 contextual suggestions for related questions
+- **Disclaimer Banner**: Always-visible notice about the tool's scope and limitations
+- **Guardrails**: Questions about legal advice or voting guidance are politely redirected to official resources
+- **Mobile Friendly**: Horizontal scrolling chips, sticky input, and optimized touch targets
 
 ### Example Questions
 
-- "What has been said about the NHS recently?"
-- "Which MPs have spoken about climate change?"
-- "What are Labour's positions on taxation?"
-- "Show me quotes about housing policy"
-- "What did Boris Johnson say about Brexit?"
+- "What are the latest discussions about education policy in Parliament?"
+- "What has been said about NHS and healthcare in recent parliamentary debates?"
+- "What are MPs saying about homelessness and housing policy?"
+- "What are the recent parliamentary discussions about international relations?"
+- "What do different political parties say about climate change?"
 
 ## Accessibility Features
 
@@ -131,10 +148,19 @@ interface ChatMessage {
 interface Citation {
   videoId: string;
   title: string;
-  timestamp: number;  // seconds
-  text: string;       // quoted text
+  timestamp: number;  // seconds - sentence-level precision
+  text: string;       // quoted text from transcript
   url: string;        // YouTube URL
   channel: string;
+}
+```
+
+### Follow-up Chip
+```typescript
+interface FollowUpChip {
+  id: string;
+  label: string;      // Display text
+  query: string;      // Full query to send
 }
 ```
 
@@ -202,6 +228,14 @@ npm run build
 - Citations are lazy-loaded
 - API calls include proper error handling and retries
 
+## Development Log
+
+All development changes are tracked in [KIRO_UPDATES.md](./KIRO_UPDATES.md), including:
+- Timestamps for each change
+- Files modified
+- Commit messages
+- Detailed explanations of what changed and why
+
 ## Contributing
 
 1. Follow accessibility guidelines (WCAG 2.2 AA)
@@ -209,6 +243,7 @@ npm run build
 3. Maintain TypeScript strict mode
 4. Use semantic HTML and proper ARIA labels
 5. Test on mobile devices and various screen sizes
+6. Update KIRO_UPDATES.md for significant changes
 
 ## License
 
