@@ -1,11 +1,13 @@
 import React from 'react';
-import { Send, Bot, User, ExternalLink, Copy, RotateCcw, Download, Database } from 'lucide-react';
+import { Send, Bot, User, ExternalLink, Copy, RotateCcw, Download, Database, Plus, Youtube } from 'lucide-react';
 import { ChatMessage, Citation, FollowUpChip } from '../../types';
 import { format } from 'date-fns';
 import { ExampleChips } from './ExampleChips';
 import { FollowUpChips } from './FollowUpChips';
 import { DisclaimerBanner } from './DisclaimerBanner';
 import { ResourceCards } from './ResourceCards';
+import { VideoIngestionPanel } from '../VideoIngestion/VideoIngestionPanel';
+import { ProcessedVideo } from '../../types/video';
 
 interface ChatInterfaceProps {
   messages: ChatMessage[];
@@ -15,6 +17,7 @@ interface ChatInterfaceProps {
   onExportKG: () => void;
   systemStatus: { videosIngested: number; entitiesExtracted: number };
   followUpSuggestions: FollowUpChip[];
+  onVideoProcessed?: (video: ProcessedVideo) => void;
 }
 
 export function ChatInterface({ 
@@ -24,9 +27,11 @@ export function ChatInterface({
   onClearChat, 
   onExportKG,
   systemStatus,
-  followUpSuggestions
+  followUpSuggestions,
+  onVideoProcessed
 }: ChatInterfaceProps) {
   const [input, setInput] = React.useState('');
+  const [showVideoPanel, setShowVideoPanel] = React.useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -82,6 +87,16 @@ export function ChatInterface({
           </div>
           
           <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowVideoPanel(true)}
+              className="flex items-center space-x-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+              title="Add YouTube videos to knowledge graph"
+            >
+              <Plus className="w-4 h-4" />
+              <Youtube className="w-4 h-4" />
+              <span className="hidden sm:inline">Add Videos</span>
+            </button>
+
             <button
               onClick={onExportKG}
               className="flex items-center space-x-2 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -280,6 +295,17 @@ export function ChatInterface({
           </p>
         </div>
       </div>
+
+      {/* Video Ingestion Panel */}
+      {showVideoPanel && (
+        <VideoIngestionPanel
+          onVideoProcessed={(video) => {
+            onVideoProcessed?.(video);
+            setShowVideoPanel(false);
+          }}
+          onClose={() => setShowVideoPanel(false)}
+        />
+      )}
     </div>
   );
 }

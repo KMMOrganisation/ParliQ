@@ -4,6 +4,97 @@ This file tracks all changes made to the ParliQ project by Kiro AI assistant.
 
 ## Change History
 
+### 2025-09-09T15:28:15+01:00 – Added secure deployment configuration for Netlify
+
+**Files changed:**
+- src/vite-env.d.ts (created)
+- src/services/videoIngestion.ts
+- src/components/VideoIngestion/VideoIngestionPanel.tsx
+- netlify.toml (created)
+- .gitignore (created)
+- .env.example
+- README.md
+
+**Commit messages:**
+- feat(security): add proper environment variable handling for public repos
+- feat(deploy): add Netlify configuration with security headers
+- fix(types): add Vite environment types for TypeScript
+- chore: add comprehensive .gitignore for security
+- docs: update README with secure deployment instructions
+
+**Details:**
+- Fixed environment variable access for Vite/TypeScript compatibility
+- Added proper TypeScript types for import.meta.env
+- Created Netlify deployment configuration with security headers and redirects
+- Updated API key setup instructions to emphasize security for public repositories
+- Added comprehensive .gitignore to prevent accidental API key commits
+- Updated .env.example with security warnings and clear instructions
+- Added specific Netlify deployment steps in README
+- Removed unused imports and fixed TypeScript issues
+- Enhanced setup instructions for both local development and cloud deployment
+
+**Linked issue/PR:** Secure deployment configuration for public repository
+
+### 2025-09-09T15:15:42+01:00 – Implemented built-in video ingestion system
+
+**Files changed:**
+- package.json
+- src/types/video.ts (created)
+- src/services/videoIngestion.ts (created)
+- src/components/VideoIngestion/VideoIngestionPanel.tsx (created)
+- src/hooks/useKnowledgeGraph.ts (created)
+- src/components/Chat/ChatInterface.tsx
+- src/App.tsx
+- src/types/index.ts
+- .env.example (created)
+- README.md
+- data/sample-videos.md (deleted)
+
+**Commit messages:**
+- feat(ingestion): add YouTube video processing pipeline
+- feat(ui): add video ingestion panel with progress tracking
+- feat(kg): implement local knowledge graph management
+- feat(rdf): add real-time RDF generation from video content
+- feat(ai): integrate Gemini API for entity extraction
+- chore: add environment configuration template
+- docs: update README for integrated video processing system
+
+**Details:**
+- Built complete video ingestion pipeline directly into ParliQ frontend
+- Added YouTube Data API v3 integration for video metadata extraction
+- Implemented transcript extraction using youtube-transcript library
+- Created AI-powered entity extraction with Google Gemini API (optional)
+- Added real-time RDF/Turtle generation using N3.js library
+- Built comprehensive video ingestion UI with progress tracking
+- Integrated local knowledge graph storage and management
+- Added support for individual videos, channels, and playlists
+- Created entity extraction for MPs, parties, policies, locations, events, quotes
+- Implemented sentence-level timestamp precision for citations
+- Added comprehensive error handling and fallback mechanisms
+- Updated architecture from backend-dependent to integrated system
+- Removed dependency on external backend for core functionality
+
+**Linked issue/PR:** Built-in video ingestion implementation
+
+### 2025-09-09T14:52:18+01:00 – Added sample video data specification
+
+**Files changed:** 
+- data/sample-videos.md (created)
+- README.md
+
+**Commit messages:**
+- feat(data): add sample YouTube video specification
+- docs: update README with video data setup guidance
+
+**Details:**
+- Created data/sample-videos.md template for YouTube URLs that backend should ingest
+- Structured by topic categories (Education, NHS/Healthcare, Housing, International Relations)
+- Included data quality requirements and backend integration guidance
+- Updated README with clear pointers to video data setup process
+- Provides framework for content team to add actual parliamentary video URLs
+
+**Linked issue/PR:** Video data specification request
+
 ### 2025-09-09T14:45:12+01:00 – Complete ParliQ feature implementation
 
 **Files changed:** 

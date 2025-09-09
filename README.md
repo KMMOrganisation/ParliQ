@@ -4,6 +4,9 @@ A conversational interface for exploring UK parliamentary discourse through an A
 
 ## Features
 
+- **Built-in Video Ingestion**: Direct YouTube video and channel processing with transcript extraction
+- **AI Entity Extraction**: Automatic identification of MPs, parties, policies, and political entities
+- **Real-time RDF Generation**: Converts video content to knowledge graph triples on-the-fly
 - **Conversational Q&A**: Natural language interface powered by AI with warm, teacher-like tone
 - **Intro Greeting**: Welcoming message explaining ParliQ's capabilities when chat is empty
 - **Example Prompt Chips**: One-click access to common topics (Education, NHS/Healthcare, Homelessness, World Politics)
@@ -18,39 +21,36 @@ A conversational interface for exploring UK parliamentary discourse through an A
 
 ## Architecture
 
-### Frontend (This Repository)
-- React + TypeScript + Tailwind CSS
-- Chat-only interface for querying the knowledge graph
-- Accessible dark-mode design
-- Citation display with YouTube timestamp links
+### Integrated System (This Repository)
+- **Frontend**: React + TypeScript + Tailwind CSS chat interface
+- **Video Processing**: Built-in YouTube transcript extraction and entity recognition
+- **Knowledge Graph**: Real-time RDF generation and storage using N3.js
+- **AI Integration**: Google Gemini for advanced entity extraction (optional)
+- **Accessible Design**: WCAG 2.2 AA compliant dark-mode interface
 
-### Backend (Required)
-The frontend expects a backend API with the following endpoints:
+### Video Ingestion Pipeline
+ParliQ includes built-in video processing capabilities:
 
-#### Required API Endpoints
+#### Data Flow
+1. **User adds YouTube URL** through the "Add Videos" interface
+2. **System extracts metadata** using YouTube Data API v3
+3. **Transcript extraction** using youtube-transcript library
+4. **AI entity extraction** identifies MPs, parties, policies, locations, events
+5. **RDF generation** converts data to knowledge graph triples
+6. **Real-time integration** makes content immediately searchable
 
-```
-POST /api/chat
-- Body: { message: string, history: ChatMessage[] }
-- Returns: ChatMessage with citations
+#### Supported Content
+- **Individual Videos**: `youtube.com/watch?v=VIDEO_ID`
+- **Channels**: `youtube.com/@channel` or `youtube.com/channel/CHANNEL_ID`
+- **Short URLs**: `youtu.be/VIDEO_ID`
 
-GET /api/status  
-- Returns: { status: string, videosIngested: number, entitiesExtracted: number }
-
-GET /api/export/knowledge-graph.ttl
-- Returns: Complete knowledge graph in Turtle format
-
-POST /api/sparql (Optional)
-- Body: SPARQL query string
-- Returns: Query results
-```
-
-#### Expected Data Flow
-1. Backend ingests YouTube videos (URLs provided separately)
-2. Backend processes transcripts → extracts entities → builds RDF triples
-3. Frontend chat queries backend with user questions
-4. Backend uses RAG (SPARQL + text search) to find relevant information
-5. Backend returns answers with citations including video timestamps
+#### Entity Types Extracted
+- **People**: MPs, Ministers, Committee Chairs
+- **Parties**: Conservative, Labour, Liberal Democrat, SNP, etc.
+- **Policies**: Bills, Acts, Policy proposals
+- **Locations**: Constituencies, regions, countries
+- **Events**: Debates, votes, committee sessions
+- **Quotes**: Direct statements with precise timestamps
 
 ## Setup
 
@@ -61,8 +61,19 @@ POST /api/sparql (Optional)
 ### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/parliq.git
+cd parliq
+
 # Install dependencies
 npm install
+
+# Copy environment template
+cp .env.example .env
+
+# Add your API keys to .env file
+# VITE_YOUTUBE_API_KEY=your_youtube_api_key_here
+# VITE_GEMINI_API_KEY=your_gemini_api_key_here
 
 # Start development server
 npm run dev
@@ -73,24 +84,59 @@ npm run build
 
 ### Environment Variables
 
-Create a `.env` file:
+Create a `.env` file (see `.env.example`):
 
 ```env
-# Backend API base URL
+# YouTube Data API v3 (Required for video ingestion)
+VITE_YOUTUBE_API_KEY=your_youtube_api_key_here
+
+# Google Gemini API (Optional - enables AI entity extraction)
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+
+# Backend API base URL (Optional - for external backend integration)
 VITE_API_BASE_URL=http://localhost:3001/api
 
-# Optional: Enable debug mode
-VITE_DEBUG=true
+# Debug mode (Optional)
+VITE_DEBUG=false
 ```
+
+#### API Key Setup
+
+**⚠️ Important for Public Repositories**: Never commit API keys to your code. Use environment variables.
+
+1. **YouTube API Key** (Required)
+   - Get from [Google Cloud Console](https://console.developers.google.com/)
+   - Enable YouTube Data API v3
+   - Create credentials → API Key
+   - Add to environment variables as `VITE_YOUTUBE_API_KEY`
+
+2. **Gemini API Key** (Optional)
+   - Get from [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Enables AI entity extraction (falls back to pattern matching without it)
+   - Add to environment variables as `VITE_GEMINI_API_KEY`
+
+#### Deployment on Netlify
+
+1. **Fork/Clone** this repository
+2. **Connect to Netlify** via GitHub/GitLab
+3. **Add Environment Variables** in Site Settings → Environment Variables:
+   ```
+   VITE_YOUTUBE_API_KEY = your_youtube_api_key_here
+   VITE_GEMINI_API_KEY = your_gemini_api_key_here
+   ```
+4. **Deploy** - Netlify will automatically build and deploy
+
+The `netlify.toml` file is included with proper build settings and security headers.
 
 ## Usage
 
-1. **Start with Examples**: Click example chips for common topics or type your own question
-2. **Ask Questions**: Type natural language questions about UK Parliament and politics
-3. **Explore Further**: Use follow-up suggestion chips to dive deeper into topics
-4. **View Citations**: Click citation links to jump to specific YouTube timestamps with sentence-level precision
-5. **Export Data**: Download the knowledge graph as Turtle format
-6. **Clear History**: Reset the conversation at any time
+1. **Add Content**: Click "Add Videos" to ingest YouTube videos or channels
+2. **Start with Examples**: Click example chips for common topics or type your own question
+3. **Ask Questions**: Type natural language questions about UK Parliament and politics
+4. **Explore Further**: Use follow-up suggestion chips to dive deeper into topics
+5. **View Citations**: Click citation links to jump to specific YouTube timestamps with sentence-level precision
+6. **Export Data**: Download the complete knowledge graph as Turtle format
+7. **Clear History**: Reset the conversation at any time
 
 ### User Interface Features
 
@@ -165,6 +211,8 @@ interface FollowUpChip {
 ```
 
 ## Backend Integration
+
+> **📹 Sample Data**: See [data/sample-videos.md](./data/sample-videos.md) for example YouTube URLs to ingest for testing and demonstration.
 
 The frontend is designed to work with a backend that:
 

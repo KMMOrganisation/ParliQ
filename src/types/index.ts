@@ -67,3 +67,6 @@ export interface ResourceCard {
   url: string;
   icon?: string;
 }
+
+// Re-export video types
+export * from './video';
