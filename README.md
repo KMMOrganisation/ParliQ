@@ -2,6 +2,8 @@
 
 A conversational interface for exploring UK parliamentary discourse through an AI-powered knowledge graph. Ask questions about politicians, policies, parties, and political events, and get answers grounded in real transcript data with source citations.
 
+> **🎯 Current Status**: ParliQ runs in demo mode out-of-the-box. Follow [SETUP_GUIDE.md](./SETUP_GUIDE.md) to enable full YouTube video processing and AI responses.
+
 ## Features
 
 - **Built-in Video Ingestion**: Direct YouTube video and channel processing with transcript extraction
@@ -101,21 +103,19 @@ VITE_DEBUG=false
 
 **🔒 Secure Architecture**: All sensitive API keys (YouTube, Gemini) are kept server-side in Supabase Edge Functions. The browser only communicates with Supabase.
 
-1. **Set up Supabase Project**
-   - Create project at [supabase.com](https://supabase.com)
-   - Run the database schema from `supabase/schema.sql`
-   - Deploy Edge Functions from `supabase/functions/`
-   - Add YouTube/Gemini API keys to Supabase environment (not browser)
+**📋 Quick Setup:**
+1. **Deploy to Netlify** (works in demo mode immediately)
+2. **Follow [SETUP_GUIDE.md](./SETUP_GUIDE.md)** for full functionality
 
-2. **Deploy to Netlify**
-   - Fork/Clone this repository
-   - Connect to Netlify via GitHub/GitLab
-   - Add only these environment variables in Site Settings:
-     ```
-     VITE_SUPABASE_URL = https://your-project.supabase.co
-     VITE_SUPABASE_ANON_KEY = your-anon-key-here
-     ```
-   - Deploy - Netlify will automatically build
+**🚀 Immediate Deploy:**
+- Fork/Clone this repository
+- Connect to Netlify via GitHub/GitLab  
+- Add environment variables in Site Settings:
+  ```
+  VITE_SUPABASE_URL = https://your-project.supabase.co
+  VITE_SUPABASE_ANON_KEY = your-anon-key-here
+  ```
+- Deploy - works in demo mode, follow setup guide for full features
 
 **Security Benefits:**
 - ✅ No API keys exposed to browser

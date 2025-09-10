@@ -4,6 +4,65 @@ This file tracks all changes made to the ParliQ project by Kiro AI assistant.
 
 ## Change History
 
+### 2025-09-09T16:35:12+01:00 – Simplified architecture by removing confusing ParliQApi abstraction
+
+**Files changed:**
+- src/services/api.ts
+- src/services/videoIngestion.ts
+- src/services/parliQApi.ts (deleted)
+
+**Commit messages:**
+- refactor: remove unnecessary ParliQApi abstraction layer
+- simplify: make ApiService directly call Supabase functions
+- cleanup: eliminate confusing double abstraction
+
+**Details:**
+- **Removed ParliQApi**: Eliminated unnecessary abstraction layer that was confusing
+- **Simplified ApiService**: Now directly calls Supabase functions instead of going through ParliQApi
+- **Cleaner architecture**: Direct path from UI → ApiService → Supabase (no middle layer)
+- **Same functionality**: All features work exactly the same, just simpler code
+- **Better maintainability**: Fewer files and clearer data flow
+
+**Architecture Now:**
+```
+UI Components → ApiService → Supabase Edge Functions
+```
+
+**Before (confusing):**
+```
+UI Components → ApiService → ParliQApi → Supabase Edge Functions
+```
+
+**Linked issue/PR:** Simplify architecture and remove confusion
+
+### 2025-09-09T16:28:45+01:00 – Added demo mode and setup guide for immediate deployment
+
+**Files changed:**
+- src/services/parliQApi.ts
+- SETUP_GUIDE.md (created)
+- README.md
+
+**Commit messages:**
+- feat(demo): add demo mode fallbacks for immediate deployment
+- docs: create comprehensive setup guide
+- feat(ux): provide helpful setup instructions in demo responses
+
+**Details:**
+- **Demo mode functionality**: ParliQ now works immediately after deployment with demo responses
+- **Graceful fallbacks**: When Edge Functions aren't deployed, shows helpful setup instructions
+- **Setup guide**: Comprehensive SETUP_GUIDE.md with step-by-step instructions
+- **Immediate deployment**: Users can deploy to Netlify and see working interface right away
+- **Clear next steps**: Demo responses explain exactly what needs to be set up for full functionality
+- **Production readiness**: Once setup is complete, switches automatically to full functionality
+
+**User Experience:**
+- ✅ Deploy immediately and see working ParliQ interface
+- ✅ Get clear instructions on how to enable full features
+- ✅ No broken states or confusing error messages
+- ✅ Smooth transition from demo to production mode
+
+**Linked issue/PR:** Demo mode for immediate deployment
+
 ### 2025-09-09T16:15:33+01:00 – Complete Supabase migration for secure API handling
 
 **Files changed:**

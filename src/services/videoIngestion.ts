@@ -1,5 +1,13 @@
 import { IngestionProgress } from '../types/video';
-import { ParliQApi, IngestedVideo } from './parliQApi';
+import { supabase } from '../lib/supabase';
+
+export interface IngestedVideo {
+  videoId: string;
+  sentences: Array<{
+    text: string;
+    start: number;
+  }>;
+}
 
 export class VideoIngestionService {
     /**
@@ -29,7 +37,18 @@ export class VideoIngestionService {
                 message: 'Processing video on server...'
             });
 
-            const result = await ParliQApi.ingestVideo(url);
+            const { data, error } = await supabase.functions.invoke('ingest-video', {
+                body: { urlOrId: url }
+            });
+
+            if (error) {
+                throw new Error(`Ingestion failed: ${error.message}`);
+            }
+
+            const result = {
+                videoId: data.videoId,
+                sentences: data.sentences || []
+            };
 
             // Stage 3: Complete
             onProgress?.({
