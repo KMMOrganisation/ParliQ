@@ -1,44 +1,50 @@
 import { ChatMessage } from '../types';
-
-const API_BASE = '/api';
+import { ParliQApi } from './parliQApi';
+import { v4 as uuidv4 } from 'uuid';
 
 export class ApiService {
   static async chatQuery(message: string, history: ChatMessage[]): Promise<ChatMessage> {
-    const response = await fetch(`${API_BASE}/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        message, 
-        history,
-        // Request sentence-level precision for citations
-        citationPrecision: 'sentence'
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Chat query failed: ${response.statusText}`);
+    try {
+      // Convert ChatMessage history to simple format for API
+      const apiHistory = history.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
+      const response = await ParliQApi.sendMessage(message, apiHistory);
+      
+      return {
+        id: response.id,
+        role: response.role,
+        content: response.content,
+        citations: response.citations,
+        timestamp: response.timestamp
+      };
+    } catch (error) {
+      throw new Error(`Chat query failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-    
-    return response.json();
   }
 
   static async getSystemStatus(): Promise<{ status: string; videosIngested: number; entitiesExtracted: number }> {
-    const response = await fetch(`${API_BASE}/status`);
-    return response.json();
+    try {
+      const status = await ParliQApi.getSystemStatus();
+      return {
+        status: 'active',
+        videosIngested: status.videosIngested,
+        entitiesExtracted: status.entitiesExtracted
+      };
+    } catch (error) {
+      console.error('Failed to get system status:', error);
+      return { status: 'error', videosIngested: 0, entitiesExtracted: 0 };
+    }
   }
 
   static async exportKnowledgeGraph(): Promise<string> {
-    const response = await fetch(`${API_BASE}/export/knowledge-graph.ttl`);
-    return response.text();
+    return ParliQApi.exportKnowledgeGraph();
   }
 
   static async sparqlQuery(query: string): Promise<any> {
-    const response = await fetch(`${API_BASE}/sparql`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/sparql-query' },
-      body: query
-    });
-    
-    return response.json();
+    // This would need to be implemented as a Supabase Edge Function if needed
+    throw new Error('SPARQL queries not implemented in current version');
   }
 }

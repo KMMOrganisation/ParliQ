@@ -1,17 +1,7 @@
 import { VideoMetadata, TranscriptSegment, ProcessedVideo, ExtractedEntity, IngestionProgress } from '../types/video';
-import { YoutubeTranscript } from 'youtube-transcript';
-import { Writer, DataFactory } from 'n3';
-
-const { namedNode, literal, quad } = DataFactory;
+import { ParliQApi, IngestedVideo } from './parliQApi';
 
 export class VideoIngestionService {
-    private static get YOUTUBE_API_KEY(): string | undefined {
-        return import.meta.env?.VITE_YOUTUBE_API_KEY;
-    }
-
-    private static get GEMINI_API_KEY(): string | undefined {
-        return import.meta.env?.VITE_GEMINI_API_KEY;
-    }
 
     static async extractVideoId(url: string): Promise<string> {
         const patterns = [
