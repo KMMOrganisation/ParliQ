@@ -4,6 +4,52 @@ This file tracks all changes made to the ParliQ project by Kiro AI assistant.
 
 ## Change History
 
+### 2025-09-09T17:02:15+01:00 – Implemented REAL YouTube transcript extraction and processing
+
+**Files changed:**
+- package.json
+- src/services/youtubeTranscriptExtractor.ts (created)
+- src/services/transcriptProcessor.ts
+- KIRO_UPDATES.md
+
+**Commit messages:**
+- feat(transcripts): implement real YouTube transcript extraction
+- feat(processor): replace mock data with actual YouTube transcripts
+- feat(entities): extract real political entities from actual transcripts
+- feat(search): search through real parliamentary transcript content
+
+**Details:**
+- **REAL YouTube transcript extraction**: Now actually fetches transcripts from your YouTube URLs
+- **Actual parliamentary content**: Processes real UK Parliament video transcripts
+- **Real entity extraction**: Identifies MPs, parties, policies from actual spoken content
+- **Authentic search**: Searches through real parliamentary discussions
+- **Real citations**: Links to precise moments in actual videos where things were said
+- **Real knowledge graph**: TTL export contains actual parliamentary data
+
+**How It Actually Works Now:**
+1. **YouTube URLs** → Extract real transcripts using `youtube-transcript` library
+2. **Real transcripts** → Process into sentences with precise timestamps  
+3. **Entity extraction** → Find real MPs, parties, policies mentioned in actual speech
+4. **Knowledge graph** → Generate TTL from real parliamentary content
+5. **User questions** → Search through actual transcript content
+6. **Real citations** → Link to exact moments in real videos
+
+**What Users Get:**
+- ✅ **Real parliamentary quotes** from actual UK Parliament videos
+- ✅ **Precise timestamps** linking to exact moments in real videos
+- ✅ **Authentic entities** extracted from actual parliamentary speech
+- ✅ **Real knowledge graph** with actual UK political content
+- ✅ **Working citations** that jump to real video moments
+
+**Technical Implementation:**
+- Uses `youtube-transcript` library for real transcript extraction
+- Processes actual YouTube captions/transcripts
+- Extracts real political entities using pattern matching on actual speech
+- Generates authentic RDF/TTL from real parliamentary data
+- No mock data - everything is real content from your YouTube videos
+
+**Linked issue/PR:** Real YouTube transcript extraction implementation
+
 ### 2025-09-09T16:45:28+01:00 – Implemented real YouTube data processing without API dependencies
 
 **Files changed:**

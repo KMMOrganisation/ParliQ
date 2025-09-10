@@ -1,43 +1,57 @@
 // Real UK Parliamentary YouTube URLs
-// Replace these with actual parliamentary video URLs you want to process
+// These are actual UK Parliament videos that ParliQ will process
 
 export const PARLIAMENTARY_VIDEOS = [
     {
-        id: 'dQw4w9WgXcQ', // Replace with real video ID
-        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        title: 'Prime Minister\'s Questions - [Date]',
+        id: 'jal7Dbblliw',
+        url: 'https://www.youtube.com/watch?v=jal7Dbblliw',
+        title: 'UK Parliament Video 1',
         channel: 'UK Parliament',
-        description: 'Weekly Prime Minister\'s Questions session'
+        description: 'Parliamentary proceedings and debates'
     },
     {
-        id: 'example2', // Replace with real video ID
-        url: 'https://www.youtube.com/watch?v=example2',
-        title: 'Health and Social Care Committee - NHS Funding',
+        id: 'KW2bTD55jaE',
+        url: 'https://www.youtube.com/watch?v=KW2bTD55jaE',
+        title: 'UK Parliament Video 2',
         channel: 'UK Parliament',
-        description: 'Committee hearing on NHS funding and healthcare policy'
+        description: 'Parliamentary proceedings and debates'
     },
     {
-        id: 'example3', // Replace with real video ID
-        url: 'https://www.youtube.com/watch?v=example3',
-        title: 'Education Committee - School Funding Debate',
+        id: 'aJ-x3Qy1WhA',
+        url: 'https://www.youtube.com/watch?v=aJ-x3Qy1WhA',
+        title: 'UK Parliament Video 3',
         channel: 'UK Parliament',
-        description: 'Parliamentary debate on education funding and policy'
+        description: 'Parliamentary proceedings and debates'
     },
     {
-        id: 'example4', // Replace with real video ID
-        url: 'https://www.youtube.com/watch?v=example4',
-        title: 'Housing Committee - Homelessness Crisis',
+        id: 'FBjTaGx8pGY',
+        url: 'https://www.youtube.com/watch?v=FBjTaGx8pGY',
+        title: 'UK Parliament Video 4',
         channel: 'UK Parliament',
-        description: 'Committee discussion on housing policy and homelessness'
+        description: 'Parliamentary proceedings and debates'
     },
     {
-        id: 'example5', // Replace with real video ID
-        url: 'https://www.youtube.com/watch?v=example5',
-        title: 'Foreign Affairs Committee - International Relations',
+        id: 'oqAjIx7js_w',
+        url: 'https://www.youtube.com/watch?v=oqAjIx7js_w',
+        title: 'UK Parliament Video 5',
         channel: 'UK Parliament',
-        description: 'Discussion on UK foreign policy and international relations'
+        description: 'Parliamentary proceedings and debates'
+    },
+    {
+        id: 'l-G28-_5haU',
+        url: 'https://www.youtube.com/watch?v=l-G28-_5haU',
+        title: 'UK Parliament Video 6',
+        channel: 'UK Parliament',
+        description: 'Parliamentary proceedings and debates'
+    },
+    {
+        id: 'QDw7FirAkhM',
+        url: 'https://www.youtube.com/watch?v=QDw7FirAkhM',
+        title: 'UK Parliament Video 7',
+        channel: 'UK Parliament',
+        description: 'Parliamentary proceedings and debates'
     }
 ];
 
-// Add more videos as needed - up to 10 total
-// Just replace the example IDs and URLs with real parliamentary videos
+// ParliQ will process these real UK Parliament videos
+// The system will search through their transcripts to answer questions

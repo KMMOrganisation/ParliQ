@@ -1,7 +1,8 @@
-// Simple transcript processor that works with hardcoded video data
-// This processes real YouTube transcripts without needing API keys
+// Real transcript processor that extracts actual YouTube transcripts
+// This processes REAL YouTube transcripts and creates knowledge graphs
 
 import { PARLIAMENTARY_VIDEOS } from '../data/parliamentaryVideos';
+import { YoutubeTranscriptExtractor, VideoWithTranscript } from './youtubeTranscriptExtractor';
 
 export interface ProcessedTranscript {
   videoId: string;
@@ -25,6 +26,8 @@ export interface ProcessedTranscript {
 
 export class TranscriptProcessor {
   private static processedVideos: Map<string, ProcessedTranscript> = new Map();
+  private static isInitialized = false;
+  private static isInitializing = false;
 
   /**
    * Get all available processed videos
@@ -34,29 +37,59 @@ export class TranscriptProcessor {
   }
 
   /**
-   * Initialize with hardcoded video data
-   * In a real setup, this would fetch from YouTube and process transcripts
+   * Initialize with REAL YouTube transcript extraction
    */
   static async initializeVideos(): Promise<void> {
-    // For now, create sample processed data for each video
-    // You can replace this with real transcript processing
+    if (this.isInitialized || this.isInitializing) {
+      return;
+    }
+
+    this.isInitializing = true;
+    console.log('🎬 Starting REAL YouTube transcript extraction...');
     
-    for (const video of PARLIAMENTARY_VIDEOS) {
-      const processed: ProcessedTranscript = {
-        videoId: video.id,
-        title: video.title,
-        channel: video.channel,
-        url: video.url,
-        sentences: this.generateSampleSentences(video),
-        entities: this.extractEntities(video)
-      };
+    try {
+      for (const video of PARLIAMENTARY_VIDEOS) {
+        try {
+          console.log(`📹 Processing: ${video.title}`);
+          
+          // Extract REAL transcript from YouTube
+          const processedVideo = await YoutubeTranscriptExtractor.processVideo(video);
+          
+          // Convert to our format
+          const processed: ProcessedTranscript = {
+            videoId: processedVideo.id,
+            title: processedVideo.title,
+            channel: processedVideo.channel,
+            url: processedVideo.url,
+            sentences: processedVideo.transcript.map(segment => ({
+              text: segment.text,
+              start: segment.start,
+              end: segment.end
+            })),
+            entities: processedVideo.entities
+          };
+          
+          this.processedVideos.set(video.id, processed);
+          console.log(`✅ Processed ${video.id}: ${processed.sentences.length} segments, ${processed.entities.length} entities`);
+          
+        } catch (error) {
+          console.error(`❌ Failed to process video ${video.id}:`, error);
+          // Continue with other videos even if one fails
+        }
+      }
       
-      this.processedVideos.set(video.id, processed);
+      this.isInitialized = true;
+      console.log(`🎉 Completed! Processed ${this.processedVideos.size} videos with REAL transcripts`);
+      
+    } catch (error) {
+      console.error('Failed to initialize videos:', error);
+    } finally {
+      this.isInitializing = false;
     }
   }
 
   /**
-   * Search for relevant sentences based on query
+   * Search for relevant sentences based on query using REAL transcripts
    */
   static searchSentences(query: string): Array<{
     videoId: string;
@@ -69,88 +102,52 @@ export class TranscriptProcessor {
       end: number;
     };
   }> {
+    // Ensure videos are initialized
+    if (!this.isInitialized && !this.isInitializing) {
+      this.initializeVideos();
+    }
+
     const results: Array<any> = [];
     const queryLower = query.toLowerCase();
+    const queryWords = queryLower.split(' ').filter(word => word.length > 2);
 
     for (const video of this.processedVideos.values()) {
       for (const sentence of video.sentences) {
-        if (sentence.text.toLowerCase().includes(queryLower)) {
+        const sentenceLower = sentence.text.toLowerCase();
+        
+        // Calculate relevance score
+        let score = 0;
+        queryWords.forEach(word => {
+          if (sentenceLower.includes(word)) {
+            score += 1;
+          }
+        });
+
+        // Boost score for exact phrase matches
+        if (sentenceLower.includes(queryLower)) {
+          score += 3;
+        }
+
+        if (score > 0) {
           results.push({
             videoId: video.videoId,
             title: video.title,
             channel: video.channel,
             url: video.url,
-            sentence
+            sentence,
+            relevanceScore: score
           });
         }
       }
     }
 
-    return results.slice(0, 5); // Return top 5 matches
+    // Sort by relevance and return top matches
+    return results
+      .sort((a, b) => b.relevanceScore - a.relevanceScore)
+      .slice(0, 5);
   }
 
-  /**
-   * Generate sample sentences for a video
-   * Replace this with real transcript processing
-   */
-  private static generateSampleSentences(video: any): Array<{text: string; start: number; end: number}> {
-    // This is where you'd process real YouTube transcripts
-    // For now, generating topic-relevant sample content
-    
-    const sentences = [];
-    
-    if (video.title.includes('Prime Minister')) {
-      sentences.push(
-        { text: "Mr Speaker, the government is committed to supporting the NHS with record investment.", start: 15, end: 22 },
-        { text: "The opposition leader asks about healthcare funding, and I can confirm we've allocated £12 billion.", start: 45, end: 52 },
-        { text: "On education policy, we're ensuring every child has access to quality schooling.", start: 78, end: 85 }
-      );
-    } else if (video.title.includes('Health')) {
-      sentences.push(
-        { text: "The NHS faces unprecedented challenges, but we're working to address staffing shortages.", start: 12, end: 19 },
-        { text: "Mental health services need significant investment, as highlighted by recent reports.", start: 34, end: 41 },
-        { text: "We're committed to reducing waiting times and improving patient outcomes.", start: 67, end: 74 }
-      );
-    } else if (video.title.includes('Education')) {
-      sentences.push(
-        { text: "School funding remains a priority, with additional resources allocated to disadvantaged areas.", start: 8, end: 15 },
-        { text: "Teacher recruitment and retention are critical issues we must address urgently.", start: 28, end: 35 },
-        { text: "University fees and student support require careful consideration and reform.", start: 52, end: 59 }
-      );
-    } else if (video.title.includes('Housing')) {
-      sentences.push(
-        { text: "The housing crisis affects millions of families across the UK.", start: 5, end: 12 },
-        { text: "We need to build more affordable homes and support first-time buyers.", start: 25, end: 32 },
-        { text: "Homelessness is unacceptable in modern Britain, and we're taking action.", start: 48, end: 55 }
-      );
-    } else {
-      sentences.push(
-        { text: "International cooperation remains vital for addressing global challenges.", start: 10, end: 17 },
-        { text: "Our foreign policy priorities include strengthening democratic alliances.", start: 30, end: 37 },
-        { text: "Trade relationships and diplomatic engagement are key to our prosperity.", start: 55, end: 62 }
-      );
-    }
 
-    return sentences;
-  }
-
-  /**
-   * Extract political entities from video content
-   */
-  private static extractEntities(video: any): Array<any> {
-    const entities = [];
-    
-    // Sample entities based on video topic
-    if (video.title.includes('Prime Minister')) {
-      entities.push(
-        { type: 'Person', text: 'Prime Minister', startTime: 15, endTime: 22, confidence: 0.9, context: 'Government leadership' },
-        { type: 'Party', text: 'Conservative', startTime: 45, endTime: 52, confidence: 0.8, context: 'Political party' },
-        { type: 'Policy', text: 'NHS funding', startTime: 78, endTime: 85, confidence: 0.9, context: 'Healthcare policy' }
-      );
-    }
-    
-    return entities;
-  }
 
   /**
    * Get video by ID
@@ -173,5 +170,5 @@ export class TranscriptProcessor {
   }
 }
 
-// Initialize on module load
-TranscriptProcessor.initializeVideos();
+// Initialize REAL YouTube transcript extraction on module load
+TranscriptProcessor.initializeVideos().catch(console.error);
