@@ -4,7 +4,6 @@ import { ChatMessage, Citation, FollowUpChip } from '../../types';
 import { format } from 'date-fns';
 import { ExampleChips } from './ExampleChips';
 import { FollowUpChips } from './FollowUpChips';
-import { DisclaimerBanner } from './DisclaimerBanner';
 import { ResourceCards } from './ResourceCards';
 
 interface ChatInterfaceProps {
@@ -64,8 +63,7 @@ export function ChatInterface({
         Skip to chat input
       </a>
 
-      {/* Disclaimer Banner */}
-      <DisclaimerBanner />
+
 
       {/* Header */}
       <header className="bg-slate-900 border-b border-slate-700 px-4 py-4">
@@ -91,8 +89,11 @@ export function ChatInterface({
                 <h2 className="text-2xl font-semibold text-slate-100 mb-4">
                   Hi! I'm ParliQ, your AI guide to what's happening in UK Parliament.
                 </h2>
-                <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
+                <p className="text-slate-400 mb-6 max-w-2xl mx-auto">
                   I'll summarise debates and link you straight to the moments in video. Ask me anything.
+                </p>
+                <p className="text-xs text-slate-500 mb-8 max-w-2xl mx-auto">
+                  Note: I explain parliamentary discussions but don't provide legal advice or voting guidance.
                 </p>
                 
                 <div className="max-w-3xl mx-auto">

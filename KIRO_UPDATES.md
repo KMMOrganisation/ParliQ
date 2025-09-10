@@ -4,6 +4,25 @@ This file tracks all changes made to the ParliQ project by Kiro AI assistant.
 
 ## Change History
 
+### 2025-09-09T15:42:18+01:00 – Made disclaimer less prominent and more integrated
+
+**Files changed:**
+- src/components/Chat/ChatInterface.tsx
+
+**Commit messages:**
+- feat(ui): integrate disclaimer as subtle note in intro section
+- refactor: remove prominent warning banner for better UX
+
+**Details:**
+- Removed prominent amber warning banner from top of interface
+- Integrated disclaimer as small, subtle note within the intro section
+- Changed tone from alarming warning to gentle informational note
+- Maintained accessibility and legal compliance while improving user experience
+- Reduced visual clutter and made interface more welcoming
+- Kept disclaimer content but made it less intimidating for users
+
+**Linked issue/PR:** Make disclaimer less alarming and more integrated
+
 ### 2025-09-09T15:35:22+01:00 – Removed admin buttons for end-user interface
 
 **Files changed:**
