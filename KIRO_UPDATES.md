@@ -4,6 +4,26 @@ This file tracks all changes made to the ParliQ project by Kiro AI assistant.
 
 ## Change History
 
+### 2025-09-09T15:35:22+01:00 – Removed admin buttons for end-user interface
+
+**Files changed:**
+- src/components/Chat/ChatInterface.tsx
+- src/App.tsx
+
+**Commit messages:**
+- feat(ui): remove admin buttons from user interface
+- refactor: clean up unused imports and props
+
+**Details:**
+- Removed "Add Videos", "Export TTL", and "Clear" buttons from header
+- Cleaned up unused imports (Plus, Youtube, RotateCcw, Download icons)
+- Removed unused props and functions from ChatInterface component
+- Simplified App.tsx by removing knowledge graph and export functionality
+- Streamlined interface to focus purely on conversational experience
+- Maintains clean, user-focused interface without administrative controls
+
+**Linked issue/PR:** Remove admin buttons for end users
+
 ### 2025-09-09T15:28:15+01:00 – Added secure deployment configuration for Netlify
 
 **Files changed:**
