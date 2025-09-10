@@ -28,16 +28,16 @@ A conversational interface for exploring UK parliamentary discourse through an A
 - **AI Integration**: Google Gemini for advanced entity extraction (optional)
 - **Accessible Design**: WCAG 2.2 AA compliant dark-mode interface
 
-### Video Ingestion Pipeline
-ParliQ includes built-in video processing capabilities:
+### Secure Video Processing Pipeline
+ParliQ processes videos entirely server-side for security:
 
 #### Data Flow
-1. **User adds YouTube URL** through the "Add Videos" interface
-2. **System extracts metadata** using YouTube Data API v3
-3. **Transcript extraction** using youtube-transcript library
-4. **AI entity extraction** identifies MPs, parties, policies, locations, events
-5. **RDF generation** converts data to knowledge graph triples
-6. **Real-time integration** makes content immediately searchable
+1. **Browser calls Supabase** Edge Function with YouTube URL
+2. **Server-side processing** extracts metadata using YouTube Data API v3
+3. **Server-side transcript extraction** using secure API calls
+4. **Server-side AI entity extraction** identifies MPs, parties, policies, locations, events
+5. **Database storage** in Supabase with RDF generation
+6. **Browser receives** processed sentences with precise timestamps
 
 #### Supported Content
 - **Individual Videos**: `youtube.com/watch?v=VIDEO_ID`
@@ -87,46 +87,41 @@ npm run build
 Create a `.env` file (see `.env.example`):
 
 ```env
-# YouTube Data API v3 (Required for video ingestion)
-VITE_YOUTUBE_API_KEY=your_youtube_api_key_here
-
-# Google Gemini API (Optional - enables AI entity extraction)
-VITE_GEMINI_API_KEY=your_gemini_api_key_here
-
-# Backend API base URL (Optional - for external backend integration)
-VITE_API_BASE_URL=http://localhost:3001/api
+# Supabase Configuration (Required)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
 
 # Debug mode (Optional)
 VITE_DEBUG=false
 ```
 
-#### API Key Setup
+**Note**: YouTube and Gemini API keys are configured in Supabase Edge Functions, not in the browser environment.
 
-**⚠️ Important for Public Repositories**: Never commit API keys to your code. Use environment variables.
+#### Deploying with Netlify + Supabase (no public APIs)
 
-1. **YouTube API Key** (Required)
-   - Get from [Google Cloud Console](https://console.developers.google.com/)
-   - Enable YouTube Data API v3
-   - Create credentials → API Key
-   - Add to environment variables as `VITE_YOUTUBE_API_KEY`
+**🔒 Secure Architecture**: All sensitive API keys (YouTube, Gemini) are kept server-side in Supabase Edge Functions. The browser only communicates with Supabase.
 
-2. **Gemini API Key** (Optional)
-   - Get from [Google AI Studio](https://makersuite.google.com/app/apikey)
-   - Enables AI entity extraction (falls back to pattern matching without it)
-   - Add to environment variables as `VITE_GEMINI_API_KEY`
+1. **Set up Supabase Project**
+   - Create project at [supabase.com](https://supabase.com)
+   - Run the database schema from `supabase/schema.sql`
+   - Deploy Edge Functions from `supabase/functions/`
+   - Add YouTube/Gemini API keys to Supabase environment (not browser)
 
-#### Deployment on Netlify
+2. **Deploy to Netlify**
+   - Fork/Clone this repository
+   - Connect to Netlify via GitHub/GitLab
+   - Add only these environment variables in Site Settings:
+     ```
+     VITE_SUPABASE_URL = https://your-project.supabase.co
+     VITE_SUPABASE_ANON_KEY = your-anon-key-here
+     ```
+   - Deploy - Netlify will automatically build
 
-1. **Fork/Clone** this repository
-2. **Connect to Netlify** via GitHub/GitLab
-3. **Add Environment Variables** in Site Settings → Environment Variables:
-   ```
-   VITE_YOUTUBE_API_KEY = your_youtube_api_key_here
-   VITE_GEMINI_API_KEY = your_gemini_api_key_here
-   ```
-4. **Deploy** - Netlify will automatically build and deploy
-
-The `netlify.toml` file is included with proper build settings and security headers.
+**Security Benefits:**
+- ✅ No API keys exposed to browser
+- ✅ All requests go to `*.supabase.co` only
+- ✅ YouTube/Gemini processing happens server-side
+- ✅ Safe for public repositories
 
 ## Usage
 

@@ -4,6 +4,54 @@ This file tracks all changes made to the ParliQ project by Kiro AI assistant.
 
 ## Change History
 
+### 2025-09-09T16:15:33+01:00 – Complete Supabase migration for secure API handling
+
+**Files changed:**
+- .env.example
+- package.json
+- src/lib/supabase.ts (created)
+- src/services/parliQApi.ts (created)
+- src/services/api.ts
+- src/services/videoIngestion.ts
+- src/vite-env.d.ts
+- netlify.toml
+- README.md
+- supabase/schema.sql (created)
+- supabase/functions/ingest-video/index.ts (created)
+- supabase/functions/chat/index.ts (created)
+- supabase/functions/discover-videos/index.ts (created)
+- supabase/functions/export-knowledge-graph/index.ts (created)
+
+**Commit messages:**
+- feat(security): migrate to Supabase-only architecture
+- feat(backend): create Supabase Edge Functions for video processing
+- feat(api): implement secure ParliQApi client
+- refactor: remove all direct Google API calls from browser
+- feat(database): add comprehensive Supabase schema
+- security: update CSP to only allow Supabase connections
+- docs: update README for secure deployment model
+
+**Details:**
+- **Complete security overhaul**: Removed all Google API keys from browser environment
+- **Supabase-only communication**: Browser now only calls *.supabase.co endpoints
+- **Server-side processing**: YouTube API and Gemini calls moved to Edge Functions
+- **Secure video ingestion**: All transcript extraction and AI processing happens server-side
+- **Database schema**: Complete PostgreSQL schema for videos, transcripts, entities, and RDF triples
+- **Edge Functions**: Four functions handle ingest-video, chat, discover-videos, and export-knowledge-graph
+- **Updated environment**: Only VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY needed in browser
+- **CSP security**: Content Security Policy updated to block direct Google API access
+- **API abstraction**: New ParliQApi provides clean interface to Supabase functions
+- **Maintained UX**: All existing UI/UX, tone, disclaimer, and features preserved
+- **Knowledge graph export**: TTL export now generated server-side from database
+
+**Security Benefits:**
+- ✅ No API keys exposed to browser or public repository
+- ✅ All sensitive operations happen server-side
+- ✅ Network requests only go to Supabase (*.supabase.co)
+- ✅ Safe for public deployment and open source
+
+**Linked issue/PR:** Supabase migration for secure API handling
+
 ### 2025-09-09T15:42:18+01:00 – Made disclaimer less prominent and more integrated
 
 **Files changed:**
