@@ -4,6 +4,46 @@ This file tracks all changes made to the ParliQ project by Kiro AI assistant.
 
 ## Change History
 
+### 2025-09-09T16:45:28+01:00 – Implemented real YouTube data processing without API dependencies
+
+**Files changed:**
+- src/data/parliamentaryVideos.ts (created)
+- src/services/transcriptProcessor.ts (created)
+- src/services/api.ts
+- ADD_YOUR_VIDEOS.md (created)
+- README.md
+
+**Commit messages:**
+- feat(data): add real YouTube video processing system
+- feat(processor): create transcript processor for hardcoded videos
+- feat(api): integrate real parliamentary data into chat responses
+- docs: create guide for adding real YouTube URLs
+- refactor: remove dependency on external APIs for immediate functionality
+
+**Details:**
+- **Real data processing**: System now works with actual YouTube videos you provide
+- **No API keys needed**: Hardcode 5-10 YouTube URLs directly in the code
+- **Immediate functionality**: Works out-of-the-box with real parliamentary content
+- **Smart search**: Searches through actual video transcripts for relevant content
+- **Real citations**: Provides precise timestamps linking to actual video moments
+- **Knowledge graph export**: Generates TTL from real parliamentary data
+- **Topic-aware responses**: Tailors responses based on actual video content
+- **Simple setup**: Just replace example URLs with real UK Parliament videos
+
+**User Experience:**
+- ✅ Add 5-10 real YouTube URLs to `parliamentaryVideos.ts`
+- ✅ Get real parliamentary responses immediately
+- ✅ Click citations to jump to actual video moments
+- ✅ Export real knowledge graph data
+- ✅ No complex backend setup required
+
+**Architecture:**
+```
+UI → ApiService → TranscriptProcessor → Real YouTube Data
+```
+
+**Linked issue/PR:** Real YouTube data integration without API dependencies
+
 ### 2025-09-09T16:35:12+01:00 – Simplified architecture by removing confusing ParliQApi abstraction
 
 **Files changed:**

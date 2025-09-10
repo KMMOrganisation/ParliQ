@@ -2,7 +2,7 @@
 
 A conversational interface for exploring UK parliamentary discourse through an AI-powered knowledge graph. Ask questions about politicians, policies, parties, and political events, and get answers grounded in real transcript data with source citations.
 
-> **🎯 Current Status**: ParliQ runs in demo mode out-of-the-box. Follow [SETUP_GUIDE.md](./SETUP_GUIDE.md) to enable full YouTube video processing and AI responses.
+> **🎯 Quick Start**: ParliQ works immediately with sample data. Add real YouTube URLs in [ADD_YOUR_VIDEOS.md](./ADD_YOUR_VIDEOS.md) to get actual parliamentary content.
 
 ## Features
 
@@ -104,8 +104,9 @@ VITE_DEBUG=false
 **🔒 Secure Architecture**: All sensitive API keys (YouTube, Gemini) are kept server-side in Supabase Edge Functions. The browser only communicates with Supabase.
 
 **📋 Quick Setup:**
-1. **Deploy to Netlify** (works in demo mode immediately)
-2. **Follow [SETUP_GUIDE.md](./SETUP_GUIDE.md)** for full functionality
+1. **Deploy to Netlify** (works with sample data immediately)
+2. **Add real YouTube URLs** following [ADD_YOUR_VIDEOS.md](./ADD_YOUR_VIDEOS.md)
+3. **Optional**: Follow [SETUP_GUIDE.md](./SETUP_GUIDE.md) for advanced Supabase setup
 
 **🚀 Immediate Deploy:**
 - Fork/Clone this repository

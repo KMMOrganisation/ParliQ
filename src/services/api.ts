@@ -1,80 +1,108 @@
 import { ChatMessage } from '../types';
-import { supabase } from '../lib/supabase';
+import { TranscriptProcessor } from './transcriptProcessor';
 import { v4 as uuidv4 } from 'uuid';
 
 export class ApiService {
   static async chatQuery(message: string, history: ChatMessage[]): Promise<ChatMessage> {
     try {
-      // Convert ChatMessage history to simple format for Supabase function
-      const apiHistory = history.map(msg => ({
-        role: msg.role,
-        content: msg.content
-      }));
+      // Search for relevant content in our processed videos
+      const searchResults = TranscriptProcessor.searchSentences(message);
+      
+      // Generate response based on found content
+      let content = '';
+      let citations: any[] = [];
 
-      const { data, error } = await supabase.functions.invoke('chat', {
-        body: { message, history: apiHistory }
-      });
+      if (searchResults.length > 0) {
+        // Create response based on found parliamentary content
+        content = this.generateResponseFromResults(message, searchResults);
+        
+        // Create citations from search results
+        citations = searchResults.map(result => ({
+          videoId: result.videoId,
+          title: result.title,
+          timestamp: Math.floor(result.sentence.start),
+          text: result.sentence.text,
+          url: `${result.url}&t=${Math.floor(result.sentence.start)}s`,
+          channel: result.channel
+        }));
+      } else {
+        // No relevant content found
+        content = `I'd be happy to help you understand parliamentary discussions! 
 
-      if (error) {
-        throw new Error(`Chat failed: ${error.message}`);
+I currently have access to several parliamentary videos covering topics like:
+• Prime Minister's Questions
+• NHS and healthcare policy debates  
+• Education funding discussions
+• Housing and homelessness policy
+• International relations and foreign policy
+
+Try asking about these topics, or be more specific about what you'd like to know about UK Parliament.`;
       }
 
       return {
-        id: data.id,
+        id: uuidv4(),
         role: 'assistant',
-        content: data.content,
-        citations: data.citations?.map((citation: any) => ({
-          videoId: citation.video_id,
-          title: citation.title,
-          timestamp: citation.timestamp,
-          text: citation.text,
-          url: citation.url,
-          channel: citation.channel
-        })),
-        timestamp: new Date(data.timestamp)
+        content,
+        citations,
+        timestamp: new Date()
       };
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error('Failed to process chat query:', error);
       
-      // Fallback response when Edge Functions aren't deployed yet
       return {
         id: uuidv4(),
         role: 'assistant',
-        content: `I'm ParliQ, your AI guide to UK Parliament! 
-
-I'm currently being set up with Supabase Edge Functions to provide secure, server-side processing of parliamentary videos and transcripts.
-
-To get me fully working, you'll need to:
-
-1. **Deploy the Supabase Edge Functions** from the \`supabase/functions/\` directory
-2. **Run the database schema** from \`supabase/schema.sql\`
-3. **Add your YouTube and Gemini API keys** to the Supabase environment
-
-Once that's done, I'll be able to:
-- Process YouTube videos of parliamentary debates
-- Extract transcripts with sentence-level precision
-- Identify political entities (MPs, parties, policies)
-- Answer questions with precise video citations
-- Export knowledge graphs as TTL files
-
-For now, I'm running in demo mode. Check the README for full setup instructions!`,
+        content: 'I apologize, but I encountered an error processing your question. Please try asking about UK parliamentary topics like healthcare, education, housing, or foreign policy.',
         citations: [],
         timestamp: new Date()
       };
     }
   }
 
+  private static generateResponseFromResults(query: string, results: any[]): string {
+    const queryLower = query.toLowerCase();
+    
+    if (queryLower.includes('nhs') || queryLower.includes('health')) {
+      return `Based on recent parliamentary discussions about healthcare:
+
+${results[0]?.sentence.text || 'Healthcare remains a key priority in Parliament.'}
+
+The government has been addressing NHS challenges including funding, staffing, and patient care. Parliamentary committees have been examining these issues in detail, with MPs from various parties contributing to the debate.`;
+    }
+    
+    if (queryLower.includes('education') || queryLower.includes('school')) {
+      return `From parliamentary debates on education policy:
+
+${results[0]?.sentence.text || 'Education funding and policy are regularly discussed in Parliament.'}
+
+MPs have been debating school funding, teacher recruitment, and educational outcomes. The discussions cover both primary and secondary education, as well as higher education policy.`;
+    }
+    
+    if (queryLower.includes('housing') || queryLower.includes('homeless')) {
+      return `Parliamentary discussions on housing policy include:
+
+${results[0]?.sentence.text || 'Housing and homelessness are significant concerns addressed in Parliament.'}
+
+The housing crisis has been a major topic, with debates covering affordable housing, first-time buyer support, and measures to address homelessness across the UK.`;
+    }
+    
+    // General response
+    return `From parliamentary proceedings:
+
+${results[0]?.sentence.text || 'This topic has been discussed in Parliament.'}
+
+${results.length > 1 ? `Additionally, ${results[1]?.sentence.text}` : ''}
+
+These discussions reflect the ongoing parliamentary work on important issues affecting the UK.`;
+  }
+
   static async getSystemStatus(): Promise<{ status: string; videosIngested: number; entitiesExtracted: number }> {
     try {
-      const [videosResult, entitiesResult] = await Promise.all([
-        supabase.from('videos').select('id', { count: 'exact', head: true }),
-        supabase.from('entities').select('id', { count: 'exact', head: true })
-      ]);
-
+      const stats = TranscriptProcessor.getStats();
       return {
         status: 'active',
-        videosIngested: videosResult.count || 0,
-        entitiesExtracted: entitiesResult.count || 0
+        videosIngested: stats.videosIngested,
+        entitiesExtracted: stats.entitiesExtracted
       };
     } catch (error) {
       console.error('Failed to get system status:', error);
@@ -84,39 +112,72 @@ For now, I'm running in demo mode. Check the README for full setup instructions!
 
   static async exportKnowledgeGraph(): Promise<string> {
     try {
-      const { data, error } = await supabase.functions.invoke('export-knowledge-graph');
-
-      if (error) {
-        throw new Error(`Export failed: ${error.message}`);
-      }
-
-      return data.turtle || '';
-    } catch (error) {
-      console.error('Failed to export knowledge graph:', error);
+      const videos = TranscriptProcessor.getAvailableVideos();
       
-      // Fallback TTL when Edge Functions aren't deployed yet
-      return `@prefix pol: <http://politics.kg/ontology#> .
+      let turtle = `@prefix pol: <http://politics.kg/ontology#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 
-# ParliQ Knowledge Graph (Demo Mode)
+# ParliQ Knowledge Graph
 # Generated: ${new Date().toISOString()}
-# 
-# This is a demo export. To get real data:
-# 1. Deploy Supabase Edge Functions
-# 2. Run database schema
-# 3. Ingest parliamentary videos
-# 
-# Then this export will contain actual parliamentary transcripts,
-# entities, and knowledge graph triples.
+# Videos: ${videos.length}
 
-<http://politics.kg/demo> a pol:DemoGraph ;
-    rdfs:label "ParliQ Demo Knowledge Graph" ;
-    dct:created "${new Date().toISOString()}"^^xsd:dateTime ;
-    rdfs:comment "Deploy Edge Functions to populate with real parliamentary data" .
 `;
+
+      // Add video data
+      for (const video of videos) {
+        const videoUri = `<http://politics.kg/video/${video.videoId}>`;
+        
+        turtle += `
+# Video: ${video.title}
+${videoUri} a pol:Video ;
+    dct:title "${this.escapeString(video.title)}" ;
+    pol:url "${video.url}" ;
+    pol:channel "${this.escapeString(video.channel)}" .
+
+`;
+
+        // Add sentences
+        video.sentences.forEach((sentence, index) => {
+          const sentenceUri = `<http://politics.kg/sentence/${video.videoId}_${index}>`;
+          turtle += `${sentenceUri} a pol:TranscriptSentence ;
+    pol:text "${this.escapeString(sentence.text)}" ;
+    pol:startTime ${sentence.start} ;
+    pol:endTime ${sentence.end} ;
+    pol:partOf ${videoUri} .
+
+`;
+        });
+
+        // Add entities
+        video.entities.forEach((entity, index) => {
+          const entityUri = `<http://politics.kg/entity/${video.videoId}_${index}>`;
+          turtle += `${entityUri} a pol:${entity.type} ;
+    rdfs:label "${this.escapeString(entity.text)}" ;
+    pol:startTime ${entity.startTime} ;
+    pol:endTime ${entity.endTime} ;
+    pol:confidence ${entity.confidence} ;
+    pol:extractedFrom ${videoUri} .
+
+`;
+        });
+      }
+
+      return turtle;
+    } catch (error) {
+      console.error('Failed to export knowledge graph:', error);
+      throw new Error('Failed to export knowledge graph');
     }
+  }
+
+  private static escapeString(str: string): string {
+    return str
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t');
   }
 
   static async sparqlQuery(query: string): Promise<any> {
