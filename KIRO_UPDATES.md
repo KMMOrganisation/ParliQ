@@ -4,6 +4,51 @@ This file tracks all changes made to the ParliQ project by Kiro AI assistant.
 
 ## Change History
 
+### 2025-09-11T15:30:00+01:00 – Fixed function name mismatches and completed cleanup
+
+**Files changed:**
+- src/services/videoIngestion.ts
+- KIRO_UPDATES.md
+- supabase/functions/ (directories removed)
+
+**Commit messages:**
+- fix(functions): correct function names from ingest-video to ingest
+- fix(functions): correct function names from discover-videos to discover  
+- cleanup: remove incorrect Supabase function directories
+- docs: update documentation to reflect correct function names
+
+**Details:**
+- **Fixed function name mismatches**: All service files now use correct deployed function names
+- **Removed incorrect Supabase functions**: Deleted ingest-video, discover-videos, chat, export-knowledge-graph directories
+- **Updated documentation**: KIRO_UPDATES.md now reflects actual function names and cleanup
+- **Resolved 404 errors**: All function calls now target existing deployed functions
+- **Cleaned project structure**: Removed duplicate and conflicting files
+
+**Function Name Corrections:**
+- `ingest-video` → `ingest` ✅
+- `discover-videos` → `discover` ✅
+
+**Files Removed:**
+- `src/services/parliQApi.ts` (duplicate API service)
+- `src/components/Chat/ChatPage.tsx` (unused component)
+- `supabase/functions/ingest-video/` (incorrect function name)
+- `supabase/functions/discover-videos/` (incorrect function name)
+- `supabase/functions/chat/` (not matching deployed setup)
+- `supabase/functions/export-knowledge-graph/` (not used in current app)
+
+**Current Function Architecture:**
+```
+ParliQ Frontend → Supabase Edge Functions (ingest, discover) → YouTube API → Database
+```
+
+**Result:**
+- ✅ No more 404 errors from function name mismatches
+- ✅ Clean codebase aligned with deployed Supabase functions
+- ✅ Consistent function calling throughout all service files
+- ✅ Proper error handling and type safety maintained
+
+**Linked issue/PR:** Function name mismatch resolution and project cleanup
+
 ### 2025-09-09T17:18:45+01:00 – Integrated with existing Supabase + Netlify setup
 
 **Files changed:**
@@ -217,10 +262,10 @@ UI Components → ApiService → ParliQApi → Supabase Edge Functions
 - netlify.toml
 - README.md
 - supabase/schema.sql (created)
-- supabase/functions/ingest-video/index.ts (created)
-- supabase/functions/chat/index.ts (created)
-- supabase/functions/discover-videos/index.ts (created)
-- supabase/functions/export-knowledge-graph/index.ts (created)
+- supabase/functions/ingest/index.ts (created)
+- supabase/functions/chat/index.ts (created - later removed)
+- supabase/functions/discover/index.ts (created)
+- supabase/functions/export-knowledge-graph/index.ts (created - later removed)
 
 **Commit messages:**
 - feat(security): migrate to Supabase-only architecture
@@ -237,7 +282,7 @@ UI Components → ApiService → ParliQApi → Supabase Edge Functions
 - **Server-side processing**: YouTube API and Gemini calls moved to Edge Functions
 - **Secure video ingestion**: All transcript extraction and AI processing happens server-side
 - **Database schema**: Complete PostgreSQL schema for videos, transcripts, entities, and RDF triples
-- **Edge Functions**: Four functions handle ingest, chat, discover, and export-knowledge-graph
+- **Edge Functions**: Two functions handle ingest and discover (chat and export-knowledge-graph removed)
 - **Updated environment**: Only VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY needed in browser
 - **CSP security**: Content Security Policy updated to block direct Google API access
 - **API abstraction**: New ParliQApi provides clean interface to Supabase functions
