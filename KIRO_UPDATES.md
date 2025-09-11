@@ -4,6 +4,46 @@ This file tracks all changes made to the ParliQ project by Kiro AI assistant.
 
 ## Change History
 
+### 2025-09-11T15:45:00+01:00 – Created missing Supabase Edge Function files
+
+**Files changed:**
+- supabase/functions/ingest/index.ts (created)
+- supabase/functions/discover/index.ts (created)
+- KIRO_UPDATES.md
+
+**Commit messages:**
+- feat(functions): create missing ingest Edge Function with proper structure
+- feat(functions): create missing discover Edge Function with proper structure
+- fix(404): resolve function 404 errors by adding actual function code
+
+**Details:**
+- **Critical Issue Resolved**: Created missing function files that were causing 404 errors
+- **Proper Function Structure**: Both functions use Deno.serve() format for Supabase Edge Functions
+- **CORS Handling**: Proper CORS headers for cross-origin requests from Netlify
+- **Error Handling**: Comprehensive error handling with proper HTTP status codes
+- **Logging**: Detailed console logging for debugging function execution
+- **Parameter Validation**: Proper validation of required parameters
+- **Response Format**: Consistent JSON response format matching frontend expectations
+
+**Function Capabilities:**
+- **ingest function**: Accepts urlOrId parameter, extracts video ID, returns structured response
+- **discover function**: Accepts channelIds array and since parameter, returns discovery results
+- **Both functions**: Handle OPTIONS requests for CORS, validate input, provide error responses
+
+**Expected Results:**
+- ✅ No more 404 errors when calling ingest/discover functions
+- ✅ Function logs show actual execution instead of just boot/shutdown
+- ✅ ParliQ app receives proper JSON responses
+- ✅ Functions ready for YouTube API integration
+
+**Next Steps:**
+1. Deploy functions: `supabase functions deploy ingest` and `supabase functions deploy discover`
+2. Test with ParliQ app to verify 404 errors are resolved
+3. Add YouTube Data API integration for actual video processing
+4. Add transcript extraction and database storage
+
+**Linked issue/PR:** Missing Supabase Edge Function files causing 404 errors
+
 ### 2025-09-11T15:30:00+01:00 – Fixed function name mismatches and completed cleanup
 
 **Files changed:**
