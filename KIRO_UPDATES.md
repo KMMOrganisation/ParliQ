@@ -4,6 +4,61 @@ This file tracks all changes made to the ParliQ project by Kiro AI assistant.
 
 ## Change History
 
+### 2025-09-09T17:18:45+01:00 – Integrated with existing Supabase + Netlify setup
+
+**Files changed:**
+- src/services/api.ts
+- src/services/transcriptProcessor.ts
+- src/services/videoProcessor.ts (created)
+- src/services/youtubeTranscriptExtractor.ts (deleted)
+- package.json
+- KIRO_UPDATES.md
+
+**Commit messages:**
+- feat(integration): connect to existing Supabase ingest and discover functions
+- fix(csp): remove client-side YouTube calls blocked by Content Security Policy
+- feat(processor): use actual Supabase database schema (videos, transcripts tables)
+- refactor: align with existing Edge Functions (ingest, discover)
+- cleanup: remove client-side transcript extraction
+
+**Details:**
+- **Fixed CSP issues**: Removed client-side YouTube API calls that were blocked by browser security
+- **Used existing Supabase functions**: Now calls your actual `ingest` and `discover` Edge Functions
+- **Matched database schema**: Updated to use your `videos` and `transcripts` tables
+- **Proper integration**: ParliQ now works with your existing Supabase + Netlify architecture
+- **Background processing**: Videos are processed via your Supabase ingest function when needed
+- **Real data flow**: Frontend → Supabase Edge Functions → YouTube API → Database → Frontend
+
+**Architecture Integration:**
+```
+ParliQ Frontend (Netlify)
+    ↓
+Supabase Edge Functions (ingest, discover)
+    ↓
+YouTube Data API (your API key)
+    ↓
+Supabase Database (videos, transcripts)
+    ↓
+ParliQ Search & Chat
+```
+
+**How It Works Now:**
+1. **Your YouTube URLs** → Stored in `parliamentaryVideos.ts`
+2. **ParliQ calls** → Your Supabase `ingest` function
+3. **Supabase processes** → YouTube API + transcript extraction
+4. **Data stored** → Your `videos` and `transcripts` tables
+5. **ParliQ searches** → Real transcript data from your database
+6. **Users get** → Real parliamentary content with working citations
+
+**User Experience:**
+- ✅ **Real YouTube processing** via your existing Supabase setup
+- ✅ **Actual parliamentary transcripts** from your database
+- ✅ **Working citations** linking to real video moments
+- ✅ **Secure architecture** using your CSP and environment variables
+- ✅ **No duplicate work** - uses your existing infrastructure
+
+**Linked issue/PR:** Integration with existing Supabase + Netlify setup
+
 ### 2025-09-09T17:02:15+01:00 – Implemented REAL YouTube transcript extraction and processing
 
 **Files changed:**

@@ -5,7 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 export class ApiService {
   static async chatQuery(message: string, history: ChatMessage[]): Promise<ChatMessage> {
     try {
-      // Search for relevant content in our processed videos
+      // Ensure videos are loaded from your Supabase setup
+      await TranscriptProcessor.initializeVideos();
+      
+      // Search for relevant content in processed videos
       const searchResults = TranscriptProcessor.searchSentences(message);
       
       // Generate response based on found content
@@ -26,17 +29,33 @@ export class ApiService {
           channel: result.channel
         }));
       } else {
-        // No relevant content found
-        content = `I'd be happy to help you understand parliamentary discussions! 
+        // Try to ingest videos if none are processed yet
+        const stats = TranscriptProcessor.getStats();
+        if (stats.videosIngested === 0) {
+          content = `I'm ready to help you understand UK Parliament! 
 
-I currently have access to several parliamentary videos covering topics like:
-• Prime Minister's Questions
-• NHS and healthcare policy debates  
-• Education funding discussions
-• Housing and homelessness policy
-• International relations and foreign policy
+I can process the YouTube videos you've provided and answer questions about:
+• Parliamentary debates and discussions
+• MP speeches and statements  
+• Committee hearings and evidence sessions
+• Policy discussions and voting
 
-Try asking about these topics, or be more specific about what you'd like to know about UK Parliament.`;
+Let me process your videos first. This may take a moment...`;
+
+          // Trigger video processing in the background
+          this.processVideosInBackground();
+        } else {
+          content = `I'd be happy to help you understand parliamentary discussions! 
+
+I have access to ${stats.videosIngested} parliamentary videos. Try asking about topics like:
+• NHS and healthcare policy
+• Education funding and policy
+• Housing and homelessness
+• International relations
+• Economic policy
+
+What would you like to know about UK Parliament?`;
+        }
       }
 
       return {
@@ -56,6 +75,18 @@ Try asking about these topics, or be more specific about what you'd like to know
         citations: [],
         timestamp: new Date()
       };
+    }
+  }
+
+  /**
+   * Process videos in background using your Supabase ingest function
+   */
+  private static async processVideosInBackground(): Promise<void> {
+    try {
+      // This will trigger your Supabase ingest function for each video
+      await TranscriptProcessor.initializeVideos();
+    } catch (error) {
+      console.error('Background video processing failed:', error);
     }
   }
 
