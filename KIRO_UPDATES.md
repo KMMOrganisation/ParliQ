@@ -237,7 +237,7 @@ UI Components → ApiService → ParliQApi → Supabase Edge Functions
 - **Server-side processing**: YouTube API and Gemini calls moved to Edge Functions
 - **Secure video ingestion**: All transcript extraction and AI processing happens server-side
 - **Database schema**: Complete PostgreSQL schema for videos, transcripts, entities, and RDF triples
-- **Edge Functions**: Four functions handle ingest-video, chat, discover-videos, and export-knowledge-graph
+- **Edge Functions**: Four functions handle ingest, chat, discover, and export-knowledge-graph
 - **Updated environment**: Only VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY needed in browser
 - **CSP security**: Content Security Policy updated to block direct Google API access
 - **API abstraction**: New ParliQApi provides clean interface to Supabase functions

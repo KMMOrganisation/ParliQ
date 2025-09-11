@@ -37,7 +37,7 @@ export class VideoIngestionService {
                 message: 'Processing video on server...'
             });
 
-            const { data, error } = await supabase.functions.invoke('ingest-video', {
+            const { data, error } = await supabase.functions.invoke('ingest', {
                 body: { urlOrId: url }
             });
 
